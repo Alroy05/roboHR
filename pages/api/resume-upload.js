@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     // console.log(reducedDocs[4]);
 
     let summaries = [];
-    const model = new OpenAI({ temperature: 0 });
+    const model = new OpenAI({ temperature: 0, openAIApiKey: process.env.OPENAI_API_KEY, modelName: "gpt-3.5-turbo"  });
     const summarizeAllChain = loadSummarizationChain(model, {
       type: "map_reduce",
     });
