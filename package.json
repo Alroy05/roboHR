@@ -16,6 +16,7 @@
     "cors": "^2.8.5",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
+    "formidable-serverless": "^1.1.1",
     "hnswlib-node": "^1.4.2",
     "langchain": "^0.0.75",
     "next": "13.4.1",

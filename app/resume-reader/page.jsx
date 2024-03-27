@@ -8,6 +8,7 @@ import TwoColumnLayout from "../components/TwoColumnLayout";
 import ResultWithSources from "../components/ResultWithSources";
 import ButtonContainer from "../components/ButtonContainer";
 import Button from "../components/Button";
+import {useRef } from "react";
 
 const endpoint = "/api/resume-query-metadata";
 
@@ -106,43 +107,45 @@ const ResumeReader = () => {
     }
   };
 
+  
+  const [pictureFiles, setPictureFiles] = useState([]);
+
+  const pictureChangeHandler = event => {
+      const files = Array.from(event.target.files);
+      setPictureFiles(files);
+  };
+  
+  const uploadPictureHandler = async () => {
+      const pictureData = new FormData();
+      pictureFiles.forEach((file, index) => {
+          pictureData.append(`pdf${index}`, file);
+      });
+  
+      try {
+          const response = await fetch('/api/file-upload', {
+              method: 'POST',
+              body: pictureData,
+          });
+          const data = await response.json();
+          if (!response.ok) {
+              throw data;
+          }
+          setPictureFiles([]);
+      } catch (error) {
+          console.log(error.message);
+      }
+  };
+
+  const uploadFunctionalityHandler = async () => {
+    await uploadPictureHandler();
+    await handleSubmitUpload();
+  }
+
+
   return (
     <>
       <>
         <Title emoji="🤖" headingText="RoboHR" />
-        {/* <TwoColumnLayout
-          leftChildren={
-            <>
-              <PageHeader
-                heading="Your personal HR assistant"
-                boldText="Get information on a whole lot of documents."
-                description="This tool uses Document Loaders, OpenAI Embeddings, Summarization Chain, Pinecone, VectorDB QA Chain, Prompt Templates, and the Vector Store Agent."
-              />
-
-              <ButtonContainer>
-                <Button
-                  handleSubmit={handleSubmitUpload}
-                  endpoint=""
-                  buttonText=" Upload Resumes 📂"
-                />
-              </ButtonContainer>
-            </>
-          }
-          rightChildren={
-            <>
-              <ResultWithSources messages={messages} pngFile="robohr" />
-
-              <PromptBox
-                prompt={prompt}
-                handlePromptChange={handlePromptChange}
-                handleSubmit={handleSubmit}
-                error={error}
-                placeHolderText={"Enter Prompt"}
-              />
-            </>
-          }
-        /> */}
-        {/* Changes from here */}
         <div className="w-full" >
           <ButtonContainer>
                   <Button
@@ -151,6 +154,15 @@ const ResumeReader = () => {
                     buttonText=" Upload Resumes 📂"
                   />
           </ButtonContainer>
+
+          <div className="input-group input-group-sm mb-3">
+            <input accept=".pdf" type="file" className="form-control" name='picture' multiple onChange={pictureChangeHandler} />            
+            <button className={`btn btn-primary btn-sm px-3`} onClick={uploadFunctionalityHandler}>
+                submit
+            </button>
+          </div>
+
+
 
           <ResultWithSources messages={messages} pngFile="robohr" />
 
